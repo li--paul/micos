@@ -4,7 +4,7 @@
 
 ## 目标
 
-构建一个具有交互功能的操作系统
+构建一个具有交互功能、硬件访问能力的微型操作系统
 
 ## 工具
 
@@ -13,11 +13,28 @@
 * [node](https://nodejs.org/en/) 6.0 以上版本，用于运行部分构建辅助工具
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) 虚拟机
 
+## 运行
+
+```sh
+# 检出代码
+$ git clone https://github.com/treelite/micos.git
+# 构建代码
+make
+```
+
+使用 VirtualBox 构建一个虚拟机，添加软盘驱动器并作为第一启动设备，将 `output/micos.img` 作为软盘载入虚拟机
+
+or
+
+按照实现的过程检出每一步的分支代码来慢慢玩儿～
+
 ## 任务
 
 ### Hello world
 
 第一步仍然是在屏幕上输出 "Hello, World!"，不过这次面对的是绝对的裸机，没有操作系统的那种 ...
+
+**分支**: `hello`
 
 涉及的问题：
 
@@ -25,16 +42,17 @@
 * 16位汇编与实模式
 * 显示控制
 
-#### 运行
+### 加载内核
 
-```sh
-# 检出代码
-$ git clone --branch hello https://github.com/treelite/micos.git
-# 构建代码
-make
-```
+512 字节的引导区毕竟空间有限不可能容纳整操作系统，因此需要将引导程序与系统内核分开，由引导程序来完成系统内核的载入与启动。这次内核除了能显示字符串外，还要能实时显示时间了，总算有点点实际价值了 ...
 
-使用 VirtualBox 构建一个虚拟机，添加软盘驱动器，并将 `output/micos.img` 作为软盘载入虚拟机，然后启动
+**分支**: `loadKernel`
+
+涉及的问题：
+
+* 调用 BIOS 中断服务操作硬件
+* 实模式的地址分段
+* 自定义中断处理程序
 
 ## 参考
 
