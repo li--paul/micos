@@ -4,13 +4,13 @@
 ; treelite(c.xinle@gmail.com)
 ;
 
-; 从磁盘读取扇区 
+; 从磁盘读取扇区
 ; 使用 LAB 方式
 ;
-; Params:
+; params:
 ;   {dw} 扇区数
 ;   {dw} 起始扇区编号
-;   {es:bx} 缓冲区地址
+;   es:bx 缓冲区地址
 readFloopy:
     push bp
     ; 保存当前的栈顶指针

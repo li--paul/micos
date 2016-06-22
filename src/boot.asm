@@ -28,8 +28,9 @@ mov [KERNEL_ENTRY + 2], ax
 
 ; 设置 boot 栈地址
 mov ax, K_ADDRESS
+sub ax, 1000h
 mov ss, ax
-mov sp, 0FFFFh
+mov sp, 0
 
 ; 尝试读取 boot 后的一个扇区
 ; 获取内核的头信息
