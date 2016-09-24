@@ -1,3 +1,9 @@
+;
+; 系统引导程序
+;
+; treelite(c.xinle@gmail.com)
+;
+
 ; 引导程序会被 BIOS 加载到 0x0000:0x7C00 位置
 ; 使用 org 可以指定后续所有的编译地址都加上这个偏移量
 ; 以使编译后的地址与实际运行地址一致
@@ -10,45 +16,57 @@ bits 16
 ; 所有的 x86 CPU 在启动后都只相当于 8086，也就是工作在实模式
 cpu 8086
 
-; 将显存的段地址赋值给 es
-; 通过直接操作显存的方式来显示字符串
-mov ax, 0B800h
+; 内核加载地址
+K_ADDRESS equ 3000h
+
+; 设置内核加载地址
+mov ax, K_ADDRESS
 mov es, ax
+mov bx, 0
+; 保存内核代码段地址
+mov [KERNEL_ENTRY + 2], ax
 
-; 设置 di 为 0
-; es:di 就指向了显存的第一个字节
-mov di, 0
+; 设置 boot 栈地址
+mov ax, K_ADDRESS
+sub ax, 1000h
+mov ss, ax
+mov sp, 0
 
-; 设置 si 为需要显示的字符串首地址偏移量
-; ds:si 就指向了字符串的第一个字节（ds 默认为 0）
-mov si, MSG_TEXT
+; 尝试读取 boot 后的一个扇区
+; 获取内核的头信息
+mov ax, 1
+push ax
+push ax
+call readFloopy
 
-; 将字符串的长度赋值给 cx
-; 方便后续循环输出字符串
-mov cx, [MSG_TEXT_LEN]
+; 获取内核大小
+mov ax, [es:bx]
+mov dx, [es:bx + 2]
+; 获取内核入口地址偏移量
+mov cx, [es:bx + 4]
+; 保存内核入口地址偏移量
+mov [KERNEL_ENTRY], cx
 
-; 设置显示字符的样式
-; 在文本模式下，显存的奇数字节为需要显示的 ASCII 编码
-; 偶数字节为字符对应的样式
-mov ah, 7
+; 用内核大小除以扇区字节数
+; 以确定是否需要继续加载内核
+div word [SECTOR_LEN]
+cmp ax, 0
+jz runKernel
 
-; 循环输出字符串
-print:
-	; 从 ds:si 中读取一个字节的字符到 al，并将 si 加一
-	lodsb
-	; 将 al 中的字符存放在 es:di 中，并将 di 加一
-	stosw
-	; cx 减一 如果 cx 不为 0 则跳转到 print 处
-	loop print
+; 继续加载剩余的内核代码
+push ax
+mov ax, 2
+push ax
+add bx, [SECTOR_LEN]
+call readFloopy
 
-; 死循环
-; 运行到这里就可以了
-jmp $
+; 跳转至内核入口地址继续执行
+runKernel jmp far [KERNEL_ENTRY]
 
-; 申明需要显示的字符串
-MSG_TEXT db 'Hello, World!'
-; 字符串长度
-MSG_TEXT_LEN db $ - MSG_TEXT
+%include 'io.asm'
+
+; 内核的入口地址
+KERNEL_ENTRY dd 0
 
 ; 填充剩余的扇区空间
 ; 并标记当前扇区为引导区

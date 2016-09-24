@@ -1,13 +1,18 @@
 OUTPUT = output
 SOURCE = src
+INC_DIR = src/include/
+nasm = nasm -f bin -i $(INC_DIR)
 
 all: compile
-	node tool/burnFloopy.js $(OUTPUT)/boot.img $(OUTPUT)/micos.img
+	node tool/burnFloopy.js $(OUTPUT)/boot.img $(OUTPUT)/kernel.img $(OUTPUT)/micos.img
 
-compile: before boot
+compile: before boot kernel
 
 boot:
-	nasm -f bin $(SOURCE)/boot.asm -o $(OUTPUT)/boot.img
+	$(nasm) $(SOURCE)/boot.asm -o $(OUTPUT)/boot.img
+
+kernel:
+	$(nasm) $(SOURCE)/kernel.asm -o $(OUTPUT)/kernel.img
 
 before: clear
 	mkdir output
