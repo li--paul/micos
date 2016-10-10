@@ -4,14 +4,14 @@
 ; treelite(c.xinle@gmail.com)
 ;
 
-; 从磁盘读取扇区
+; 从软盘读取扇区
 ; 使用 LAB 方式
 ;
 ; params:
 ;   {dw} 扇区数
 ;   {dw} 起始扇区编号
 ;   es:bx 缓冲区地址
-readFloopy:
+readSector:
     push bp
     ; 保存当前的栈顶指针
     ; 方便后续访问调用参数
@@ -27,7 +27,7 @@ readFloopy:
     div word [FL_H_LEN]
     push dx
     mov dh, al
-    
+
     ; 设置磁道编号
     pop ax
     div byte [FL_C_LEN]
