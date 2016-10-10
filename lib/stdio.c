@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const VGA_ADDRESS = 0xB8000;
+static const int VGA_ADDRESS = 0xB8000;
 
 void print(char *str) {
     int len = strlen(str);
