@@ -1,3 +1,5 @@
+ENTRY(_main)
+
 SECTIONS
 {
     . = 0x200000;
