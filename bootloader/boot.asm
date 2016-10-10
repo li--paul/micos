@@ -30,6 +30,7 @@ push ax
 call readSector
 
 ; 准备进入保护模式
+; 屏蔽中断
 cli
 
 ; 加载全局描述符表
@@ -48,13 +49,13 @@ mov cr0, eax
 ; 远跳，其目的是刷新 CS 段寄存器
 ; 并且终止CPU流线操作，抛弃所有已进入流水管线执行的结果
 ; 0x8 为段选择子，选择代码段
-jmp 0x8:p_mode
+jmp 0x8:protected
 
 %include 'util/io.asm'
 
 ; 以下代码开始使用 32 位编码
 bits 32
-p_mode:
+protected:
     ; 重新设置所有的段寄存器
     mov ax, 0x10
     mov ds, ax
@@ -83,13 +84,14 @@ p_mode:
 	mov ecx, 0
 	mov cx, [esi + 44]
 
-	; Read program header
+	; Load segment by program header item
 	add esi, ebx
-	loadProgram:
+	loadSegment:
 		; p_type
 		mov eax, [esi]
+		; TYPE = 1 -> a loadable segment
 		cmp eax, 1
-		jnz nextProgram
+		jnz nextSegment
 
 		; load program segment
 		; Segment size
@@ -105,7 +107,7 @@ p_mode:
 		mov esi, KERNEL_ADDRESS
 		add esi, ebx
 
-
+		; Copy segment to runtime address
 		cpySegment:
 			lodsb
 			stosb
@@ -114,14 +116,14 @@ p_mode:
 		pop esi
 		pop ecx
 
-	nextProgram:
+	nextSegment:
 		add esi, edx
-		loop loadProgram
+		loop loadSegment
 
 	mov eax, 0
-	; 执行正真的内核
+	; Go to kernel
 	call [KERNEL_ENTRY]
-	; 检查执行结果
+	; Check the return
 	cmp eax, 0
 	jz end
 	push eax
