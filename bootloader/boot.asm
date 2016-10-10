@@ -119,10 +119,14 @@ p_mode:
 		loop loadProgram
 
 	mov eax, 0
+	; 执行正真的内核
 	call [KERNEL_ENTRY]
+	; 检查执行结果
+	cmp eax, 0
+	jz end
 	push eax
 	call printReg
-    jmp $
+	end jmp $
 
 %include 'util/log32.asm'
 
