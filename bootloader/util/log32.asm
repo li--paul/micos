@@ -9,53 +9,53 @@ VGA_ADDRESS equ 0xB8000
 ; 显示寄存器内容
 ;
 ; params:
-;	{dw} 寄存器内容
+;    {dw} 寄存器内容
 printReg:
-	push ebp
-	mov ebp, esp
-	push eax
-	push edx
-	push ebx
-	push ecx
-	push edi
+    push ebp
+    mov ebp, esp
+    push eax
+    push edx
+    push ebx
+    push ecx
+    push edi
 
-	mov edi, VGA_ADDRESS
+    mov edi, VGA_ADDRESS
 
-	mov ecx, 0
-	mov eax, [ebp + 8]
-	mov ebx, 16
-	_opDiv:
-		mov edx, 0
-		div ebx
-		push edx
-		add ecx, 1
-		cmp eax, 0
-		jnz _opDiv
-	_print:
-		pop eax
-		cmp eax, 10
-		jb _toChar
-		add eax, 7
-		_toChar:
-			add eax, 48
-		mov ah, 7
-		mov [edi], ax
-		add edi, 2
-		loop _print
+    mov ecx, 0
+    mov eax, [ebp + 8]
+    mov ebx, 16
+    _opDiv:
+        mov edx, 0
+        div ebx
+        push edx
+        add ecx, 1
+        cmp eax, 0
+        jnz _opDiv
+    _print:
+        pop eax
+        cmp eax, 10
+        jb _toChar
+        add eax, 7
+        _toChar:
+            add eax, 48
+        mov ah, 7
+        mov [edi], ax
+        add edi, 2
+        loop _print
 
-	pop edi
-	pop ecx
-	pop ebx
-	pop edx
-	pop eax
-	pop ebp
-	ret 4
+    pop edi
+    pop ecx
+    pop ebx
+    pop edx
+    pop eax
+    pop ebp
+    ret 4
 
 ; 显示字符串
 ;
 ; params:
-;	{dw} 字符串长度
-;	{dw} 字符串地址
+;    {dw} 字符串长度
+;    {dw} 字符串地址
 printStr:
     push ebp
     mov ebp, esp
