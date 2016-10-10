@@ -1,22 +1,39 @@
 OUTPUT = output
-SOURCE = src
-INC_DIR = src/include/
-nasm = nasm -f bin -i $(INC_DIR)
 
-all: compile
-	node tool/burnFloopy.js $(OUTPUT)/boot.img $(OUTPUT)/kernel.img $(OUTPUT)/micos.img
+BOOT_DIR = bootloader
+BOOT_OUTPUT = $(OUTPUT)/boot.img
+BOOT_SRC = $(BOOT_DIR)/boot.asm
 
-compile: before boot kernel
+KERNEL_DIR = kernel
+KERNEL_OBJ = $(OUTPUT)/kernel.o
+KERNEL_SRC = $(KERNEL_DIR)/kernel.c
+KERNEL_OUTPUT = $(OUTPUT)/kernel
+KERNEL_LINK_SCRIPT = $(KERNEL_DIR)/kernel.ld
+
+FLOPPY_OUTPUT = $(OUTPUT)/micos.img
+
+NASM = nasm
+NASM_OPTIONS = -f bin
+
+LD = ld
+LD_OPTIONS = -melf_i386 -s
+GCC = gcc
+GCC_OPTIONS = -c -m32 -nostdinc -fno-builtin -fno-stack-protector
+
+all: build burn
+
+build: boot kernel
 
 boot:
-	$(nasm) $(SOURCE)/boot.asm -o $(OUTPUT)/boot.img
+	$(NASM) $(NASM_OPTIONS) -i $(BOOT_DIR)/ -o $(BOOT_OUTPUT) $(BOOT_SRC)
 
-kernel:
-	$(nasm) $(SOURCE)/kernel.asm -o $(OUTPUT)/kernel.img
+kernel: compileKernel linkKerenl
 
-before: clear
-	mkdir output
+compileKernel:
+	$(GCC) $(GCC_OPTIONS) -o $(KERNEL_OBJ) $(KERNEL_SRC)
 
-clear:
-	rm -rf output
+linkKerenl:
+	$(LD) $(LD_OPTIONS) -T $(KERNEL_LINK_SCRIPT) -o $(KERNEL_OUTPUT) $(KERNEL_OBJ)
 
+burn:
+	node tool/burnFloopy.js $(BOOT_OUTPUT) $(KERNEL_OUTPUT) $(FLOPPY_OUTPUT)
