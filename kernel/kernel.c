@@ -3,8 +3,10 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
+#include <stdio.h>
+
 int _main() {
-    int a = 64;
-    a++;
-    return a;
+    char *str = "Welcome to Protected Mode";
+    print(str);
+    return 0;
 }
