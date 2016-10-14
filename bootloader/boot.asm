@@ -69,66 +69,66 @@ protected:
     mov esp, eax
 
 
-	; 展开内核文件到 0x200000
-	mov esi, KERNEL_ADDRESS
-	; Save kernel entry
-	mov eax, [esi + 24]
+    ; 展开内核文件到 0x200000
+    mov esi, KERNEL_ADDRESS
+    ; Save kernel entry
+    mov eax, [esi + 24]
 
-	mov [KERNEL_ENTRY], eax
-	; Program header offset
-	mov ebx, [esi + 28]
-	; Program header item size
-	mov edx, 0
-	mov dx, [esi + 42]
-	; Program header item count
-	mov ecx, 0
-	mov cx, [esi + 44]
+    mov [KERNEL_ENTRY], eax
+    ; Program header offset
+    mov ebx, [esi + 28]
+    ; Program header item size
+    mov edx, 0
+    mov dx, [esi + 42]
+    ; Program header item count
+    mov ecx, 0
+    mov cx, [esi + 44]
 
-	; Load segment by program header item
-	add esi, ebx
-	loadSegment:
-		; p_type
-		mov eax, [esi]
-		; TYPE = 1 -> a loadable segment
-		cmp eax, 1
-		jnz nextSegment
+    ; Load segment by program header item
+    add esi, ebx
+    loadSegment:
+        ; p_type
+        mov eax, [esi]
+        ; TYPE = 1 -> a loadable segment
+        cmp eax, 1
+        jnz nextSegment
 
-		; load program segment
-		; Segment size
-		push ecx
-		mov ecx, [esi + 20]
+        ; load program segment
+        ; Segment size
+        push ecx
+        mov ecx, [esi + 20]
 
-		; Segment virtual address
-		mov edi, [esi + 8]
+        ; Segment virtual address
+        mov edi, [esi + 8]
 
-		; Segment file address
-		push esi
-		mov ebx, [esi + 4]
-		mov esi, KERNEL_ADDRESS
-		add esi, ebx
+        ; Segment file address
+        push esi
+        mov ebx, [esi + 4]
+        mov esi, KERNEL_ADDRESS
+        add esi, ebx
 
-		; Copy segment to runtime address
-		cpySegment:
-			lodsb
-			stosb
-			loop cpySegment
+        ; Copy segment to runtime address
+        cpySegment:
+            lodsb
+            stosb
+            loop cpySegment
 
-		pop esi
-		pop ecx
+        pop esi
+        pop ecx
 
-	nextSegment:
-		add esi, edx
-		loop loadSegment
+    nextSegment:
+        add esi, edx
+        loop loadSegment
 
-	mov eax, 0
-	; Go to kernel
-	call [KERNEL_ENTRY]
-	; Check the return
-	cmp eax, 0
-	jz end
-	push eax
-	call printReg
-	end jmp $
+    mov eax, 0
+    ; Go to kernel
+    call [KERNEL_ENTRY]
+    ; Check the return
+    cmp eax, 0
+    jz end
+    push eax
+    call printReg
+    end jmp $
 
 %include 'util/log32.asm'
 
@@ -138,7 +138,7 @@ GDT:
     ; Null
     times 2 dd 0
     ; Code descriptor
-	; all memory
+    ; all memory
     dw 0xFFFF ; 段界限(低16位)
     dw 0      ; 段基地址(低16位)
     db 0      ; 段基地址(中8位) 0
@@ -146,7 +146,7 @@ GDT:
     db 0xCF   ; 1100 1111 (G:1, D/B:1, L:0, AVL:0, 段界限高4位:1111)
     db 0      ; 段基地址(高8位)
     ; Data descriptor
-	; all memory
+    ; all memory
     dw 0xFFFF
     dw 0
     db 0
@@ -154,7 +154,7 @@ GDT:
     db 0xCF   ; 11001111
     db 0
     ; Stack descriptor
-	; 0x100000 - 0x1FFFFF
+    ; 0x100000 - 0x1FFFFF
     dw 0xFEFF
     dw 0
     db 0x20
