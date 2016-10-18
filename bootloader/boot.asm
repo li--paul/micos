@@ -21,9 +21,9 @@ mov ax, 0x7E0
 mov es, ax
 mov bx, 0
 ; TODO
-; 假设内核文件大小在10个扇区以内
+; 假设内核文件大小在50个扇区以内
 ; 一次性加载内核文件
-mov ax, 10
+mov ax, 50
 push ax
 mov ax, 1 ;从2号扇区开始加载
 push ax
@@ -168,7 +168,7 @@ GDT:
     dw 0x8000
     db 0x0B
     db 0x92
-    db 0x80
+    db 0x40
     db 0
 GDT_LEN equ $ - GDT
 
