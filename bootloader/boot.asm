@@ -61,6 +61,8 @@ protected:
     mov ds, ax
     mov es, ax
     mov fs, ax
+    ; 选择 VGA
+    mov ax, 0x20
     mov gs, ax
 
     mov ax, 0x18
@@ -160,6 +162,13 @@ GDT:
     db 0x20
     db 0x96   ; 10010110
     db 0xCF   ; 11001111
+    db 0
+    ; VGA descriptor
+    dw 0x7FFF
+    dw 0x8000
+    db 0x0B
+    db 0x92
+    db 0x80
     db 0
 GDT_LEN equ $ - GDT
 

@@ -13,3 +13,9 @@ int strlen(char *str) {
     }
     return len;
 }
+
+void memcpy(void *desc, const void *src, uint32_t n) {
+    for (uint32_t i = 0; i < n; i++) {
+        desc[i] = src[i];
+    }
+}

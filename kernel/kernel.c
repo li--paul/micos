@@ -3,10 +3,14 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-#include <stdio.h>
+#include "pic.h"
+
+void init() {
+    pic_init();
+    load_idt();
+}
 
 int _main() {
-    char *str = "Welcome to MicOS, you are in Protected Mode!";
-    print(str);
+    init();
     return 0;
 }
