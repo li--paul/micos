@@ -5,19 +5,19 @@
 
 #include "pic.h"
 
-const uint16_t PIC_MASTER = 0x20;
-const uint16_t PIC_SLAVE = 0xA0;
+#define PIC_MASTER 0x20
+#define PIC_SLAVE 0xA0
 
-const int IDT_SIZE = 256;
-const uint16_t INT_GATE = 0xE;
-const uint16_t INT_TRAP = 0xF;
+#define IDT_SIZE 0xFF
+#define INT_GATE 0x8E00
+#define INT_TRAP 0xEF00
 
-const uint8_t IRQ_SLAVE = 2;
-const uint8_t IRQ_OFFSET = 0x20;
+#define IRQ_SLAVE 2
+#define IRQ_OFFSET 0x20
 
-const uint8_t CODE_SELECTOR = 0x08;
+#define CODE_SELECTOR 0x8
 
-const uint32_t IDT_ADDRESS = 0;
+#define IDT_ADDRESS 0
 
 struct IDTDesc {
     uint16_t offset0_15;
@@ -34,6 +34,7 @@ struct IDTReg {
 extern void _def_handler_();
 
 struct IDTReg idt_reg;
+struct IDTDesc idt[IDT_SIZE];
 
 void pic_init() {
     outb(PIC_MASTER, 0x11);
@@ -48,8 +49,10 @@ void pic_init() {
     outb(PIC_MASTER + 1, 3);
     outb(PIC_SLAVE + 1, 3);
 
-    // 屏蔽所有中断
-    outb(PIC_MASTER + 1, 0xFF);
+    // 只打开 IRQ0 与 IRQ1
+    // 即只开启时钟与键盘中断
+    outb(PIC_MASTER + 1, 0xFD);
+    // 屏蔽SLAVE所有中断
     outb(PIC_SLAVE + 1, 0xFF);
 }
 
@@ -61,7 +64,6 @@ void create_idt_desc(uint16_t selector, uint32_t offset, uint16_t type, struct I
 }
 
 void load_idt() {
-    struct IDTDesc idt[IDT_SIZE];
     for (int i = 0; i < IDT_SIZE; i++) {
         create_idt_desc(CODE_SELECTOR, (uint32_t)_def_handler_, INT_GATE, &idt[i]);
     }
@@ -70,5 +72,7 @@ void load_idt() {
     idt_reg.base = IDT_ADDRESS;
 
     memcpy((char *)idt_reg.base, (char *)idt, idt_reg.limit);
+
     asm("lidtl (idt_reg)");
+    asm("sti");
 }
