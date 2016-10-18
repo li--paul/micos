@@ -37,7 +37,7 @@ boot:
 kernel: $(KERNEL_OBJ) $(LIBC)
 	$(LD) $(KERNEL_OBJ) $(LD_OPTIONS) -T $(KERNEL_LINK_SCRIPT) -o $(KERNEL_OUTPUT)
 
-$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.s
+$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.asm
 	$(NASM) -f elf -o $@ $<
 
 $(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.c

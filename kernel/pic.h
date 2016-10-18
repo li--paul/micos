@@ -8,9 +8,10 @@
 
 #include <stdint.h>
 #include <string.h>
+#include "kernel.h"
+#include "io.h"
 
-void init_pic();
-
+void pic_init();
 void load_idt();
 
 #endif

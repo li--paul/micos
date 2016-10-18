@@ -3,7 +3,7 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-#include "io.h"
+#include "pic.h"
 
 const uint16_t PIC_MASTER = 0x20;
 const uint16_t PIC_SLAVE = 0xA0;
@@ -21,7 +21,7 @@ const uint32_t IDT_ADDRESS = 0;
 
 struct IDTDesc {
     uint16_t offset0_15;
-    uint16_t select;
+    uint16_t selector;
     uint16_t type;
     uint16_t offset16_31;
 } __attribute__ ((packed));
@@ -31,9 +31,11 @@ struct IDTReg {
     uint32_t base;
 } __attribute__ ((packed));
 
-extern void _asm_def_handler_();
+extern void _def_handler_();
 
-void init_pic() {
+struct IDTReg idt_reg;
+
+void pic_init() {
     outb(PIC_MASTER, 0x11);
     outb(PIC_SLAVE, 0x11);
 
@@ -60,11 +62,10 @@ void create_idt_desc(uint16_t selector, uint32_t offset, uint16_t type, struct I
 
 void load_idt() {
     struct IDTDesc idt[IDT_SIZE];
-    for (int = 0; i < IDT_SIZE; i++) {
-        create_idt_desc(CODE_SELECTOR, (uint32_t)_def_handler_, INT_GATE, idt++);
+    for (int i = 0; i < IDT_SIZE; i++) {
+        create_idt_desc(CODE_SELECTOR, (uint32_t)_def_handler_, INT_GATE, &idt[i]);
     }
 
-    struct IDTReg idt_reg;
     idt_reg.limit = 8 * IDT_SIZE;
     idt_reg.base = IDT_ADDRESS;
 
