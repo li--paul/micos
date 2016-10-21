@@ -31,7 +31,8 @@ struct IDTReg {
     uint32_t base;
 } __attribute__ ((packed));
 
-extern void _def_handler_();
+extern uint32_t *_sys_interrupts_;
+extern void _def_interrupt_handler_();
 
 struct IDTReg idt_reg;
 struct IDTDesc idt[IDT_SIZE];
@@ -64,8 +65,15 @@ void create_idt_desc(uint16_t selector, uint32_t offset, uint16_t type, struct I
 }
 
 void load_idt() {
+    // 初始化 IDT
+    // 全部填充默认中断处理
     for (int i = 0; i < IDT_SIZE; i++) {
-        create_idt_desc(CODE_SELECTOR, (uint32_t)_def_handler_, INT_GATE, &idt[i]);
+        create_idt_desc(CODE_SELECTOR, (uint32_t)_def_interrupt_handler_, INT_GATE, &idt[i]);
+    }
+
+    // 添加系统默认异常与中断处理
+    for (int i = 0; i < 20; i++) {
+        create_idt_desc(CODE_SELECTOR, *_sys_interrupts_++, INT_GATE, &idt[i]);
     }
 
     idt_reg.limit = 8 * IDT_SIZE;
@@ -75,4 +83,13 @@ void load_idt() {
 
     asm("lidtl (idt_reg)");
     asm("sti");
+}
+
+void sys_exception(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags) {
+    cs_printf("Error: %d \n", id);
+}
+
+void init_interrupt() {
+    pic_init();
+    load_idt();
 }

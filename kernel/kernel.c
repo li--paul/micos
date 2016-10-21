@@ -6,8 +6,7 @@
 #include "pic.h"
 
 void init() {
-    pic_init();
-    load_idt();
+    init_interrupt();
 }
 
 int _main() {
