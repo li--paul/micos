@@ -19,7 +19,7 @@ uint32_t get_offset() {
 }
 
 uint16_t *get_address() {
-    return (uint16_t *)(VGA_ADDRESS + getOffset());
+    return (uint16_t *)(VGA_ADDRESS + get_offset());
 }
 
 void scroll_up() {
@@ -48,7 +48,7 @@ void next_line() {
 void forword() {
     cursor_x++;
     if (cursor_x >= MAX_COLUMNS) {
-        nextLine();
+        next_line();
         cursor_x = 0;
     }
 }
@@ -62,10 +62,10 @@ void update_cursor() {
 }
 
 void putc(char c) {
-    if (c === '\r') {
+    if (c == '\r') {
         cursor_x = 0;
     }
-    else if (c === '\n') {
+    else if (c == '\n') {
         cursor_x = 0;
         next_line();
     }
@@ -98,7 +98,7 @@ uint32_t itoa(uint32_t value, char *buffer, uint32_t base) {
             buffer[len++] = 'A' + r - 10;
         }
     }
-    while (v);
+    while (value);
 
     reverse(buffer, len);
     return len;
@@ -106,7 +106,7 @@ uint32_t itoa(uint32_t value, char *buffer, uint32_t base) {
 
 int print_arg(char c, va_list ap) {
     int res = 1;
-    if (c === 'u') {
+    if (c == 'u') {
         uint32_t v = va_arg(ap, uint32_t);
         char buffer[32];
         uint32_t len = itoa(v, buffer, 10);
@@ -127,7 +127,7 @@ void cs_printf(char *str, ...) {
     va_start(ap, str);
 
     while (*str) {
-        if (*str === '%' && print_arg(*(str + 1), ap)) {
+        if (*str == '%' && print_arg(*(str + 1), ap)) {
             str++;
         }
         else {

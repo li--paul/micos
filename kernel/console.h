@@ -3,11 +3,13 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-#ifndef
+#ifndef _CONSOLE_H_
 #define _CONSOLE_H_
 
+#include <stdint.h>
 #include <stdarg.h>
+#include "io.h"
 
-void cs_printf(const char *str, ...);
+void cs_printf(char *str, ...);
 
 #endif

@@ -85,8 +85,8 @@ void load_idt() {
     asm("sti");
 }
 
-void sys_exception(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags) {
-    cs_printf("Error: %d \n", id);
+void sys_exception_handler(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags) {
+    cs_printf("Error: %u \n", id);
 }
 
 void init_interrupt() {
