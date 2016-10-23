@@ -1,8 +1,11 @@
+.PHONY: all build clean
+
 OUTPUT = output
 
 BOOT_DIR = bootloader
 BOOT_OUTPUT = $(BOOT_DIR)/boot.img
 BOOT_SRC = $(BOOT_DIR)/boot.asm
+BOOT_INC = $(wildcard $(BOOT_DIR)/**/*.asm)
 
 KERNEL_DIR = kernel
 KERNEL_C_OBJ = $(patsubst %.c, %.o, $(wildcard $(KERNEL_DIR)/*.c))
@@ -27,14 +30,26 @@ LD_OPTIONS = -melf_i386 -s -L$(OUTPUT) -lc
 GCC = gcc
 GCC_OPTIONS = -c -std=c99 -m32 -nostdinc -fno-builtin -fno-stack-protector -I $(LIB_INCLUDE)
 
-all: build burn
+ifeq "$(shell uname)" "Linux"
+	TARGET = build
+else
+	TARGET = docker
+endif
 
-build: boot kernel
+all: $(TARGET)
 
-boot:
+docker:
+	docker run -v $(PWD):/micos --rm treelite/micos-dev-env build
+
+build: $(FLOPPY_OUTPUT)
+
+$(FLOPPY_OUTPUT): $(BOOT_OUTPUT) $(KERNEL_OUTPUT)
+	node tool/burnFloopy.js $(BOOT_OUTPUT) $(KERNEL_OUTPUT) $(FLOPPY_OUTPUT)
+
+$(BOOT_OUTPUT): $(BOOT_SRC) $(BOOT_INC)
 	$(NASM) -f bin -i $(BOOT_DIR)/ -o $(BOOT_OUTPUT) $(BOOT_SRC)
 
-kernel: $(KERNEL_OBJ) $(LIBC)
+$(KERNEL_OUTPUT): $(KERNEL_OBJ) $(LIBC)
 	$(LD) $(KERNEL_OBJ) $(LD_OPTIONS) -T $(KERNEL_LINK_SCRIPT) -o $(KERNEL_OUTPUT)
 
 $(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.asm
@@ -49,5 +64,7 @@ $(LIBC): $(LIB_OBJ)
 $(LIB_OBJ): %.o : %.c
 	$(GCC) $(GCC_OPTIONS) -o $@ $<
 
-burn:
-	node tool/burnFloopy.js $(BOOT_OUTPUT) $(KERNEL_OUTPUT) $(FLOPPY_OUTPUT)
+clean:
+	-rm $(OUTPUT)/*
+	-rm $(LIB_DIR)/*.o
+	-rm $(KERNEL_DIR)/*.o
