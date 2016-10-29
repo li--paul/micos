@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <stdarg.h>
+#include <string.h>
 #include "io.h"
 
 void cs_printf(char *str, ...);

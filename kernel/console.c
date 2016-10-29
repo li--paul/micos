@@ -9,13 +9,13 @@
 #define MAX_LINES 20
 #define MAX_COLUMNS 80
 
-static uint16_t color_mask = 0x700;
+#define COLOR_MASK 0x700
 
 static uint32_t cursor_x = 0;
 static uint32_t cursor_y = 0;
 
 uint32_t get_offset() {
-    return (cursor_y * MAX_COLUMNS + cursor_x) * 2;
+    return (cursor_y * MAX_COLUMNS + cursor_x) << 1;
 }
 
 uint16_t *get_address() {
@@ -24,11 +24,11 @@ uint16_t *get_address() {
 
 void scroll_up() {
     uint32_t len = get_offset() - 2 * MAX_COLUMNS;
-    char *base = VGA_ADDRESS + MAX_COLUMNS * 2;
-    char *target = VGA_ADDRESS;
+    char *base = (char *)(VGA_ADDRESS + MAX_COLUMNS * 2);
+    char *target = (char *)VGA_ADDRESS;
     memcpy(base, target, len);
 
-    uint16_t *p = VGA_ADDRESS + len;
+    uint16_t *p = (uint16_t *)(VGA_ADDRESS + len);
     int max = 2 * MAX_COLUMNS;
     int i = 0;
     while (i++ < max) {
@@ -69,9 +69,11 @@ void putc(char c) {
         cursor_x = 0;
         next_line();
     }
-    uint16_t *ptr = get_address();
-    *ptr = color_mask & c;
-    forword();
+    else {
+        uint16_t *ptr = get_address();
+        *ptr = COLOR_MASK | c;
+        forword();
+    }
     update_cursor();
 }
 
