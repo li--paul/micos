@@ -96,9 +96,9 @@ protected:
         jnz nextSegment
 
         ; load program segment
-        ; Segment size
+        ; Segment size (in file)
         push ecx
-        mov ecx, [esi + 20]
+        mov ecx, [esi + 16]
 
         ; Segment virtual address
         mov edi, [esi + 8]
@@ -116,7 +116,20 @@ protected:
             loop cpySegment
 
         pop esi
-        pop ecx
+        ; Compare the segment size and the memory size
+        ; If the memory size is bigger
+        ; Extend zero up to the memory size
+        mov ecx, [esi + 20]
+        sub ecx, [esi + 16]
+        jz finishCpy
+
+        extendZero:
+            mov byte [edi], 0
+            inc edi
+            loop extendZero
+
+        finishCpy:
+            pop ecx
 
     nextSegment:
         add esi, edx
