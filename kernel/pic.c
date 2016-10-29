@@ -33,6 +33,7 @@ struct IDTReg {
 
 extern uint32_t *_sys_interrupts_;
 extern void _def_interrupt_handler_();
+extern void _keyboard_handler_();
 
 struct IDTReg idt_reg;
 struct IDTDesc idt[IDT_SIZE];
@@ -76,6 +77,9 @@ void load_idt() {
         create_idt_desc(CODE_SELECTOR, *_sys_interrupts_++, INT_GATE, &idt[i]);
     }
 
+    // Keyboard  handler
+    create_idt_desc(CODE_SELECTOR, (uint32_t)_keyboard_handler_, INT_GATE, &idt[33]);
+
     idt_reg.limit = 8 * IDT_SIZE;
     idt_reg.base = IDT_ADDRESS;
 
@@ -87,6 +91,10 @@ void load_idt() {
 
 void sys_exception_handler(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags) {
     cs_printf("Error: %u \n", id);
+}
+
+void inter_keyboard() {
+    cs_printf("Keyboard, ID: %u\n", 33);
 }
 
 void init_interrupt() {

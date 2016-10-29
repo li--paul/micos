@@ -11,6 +11,8 @@ global _def_interrupt_handler_
 
 global _sys_interrupts_
 
+global _keyboard_handler_
+
 ; 系统默认异常与中断
 _sys_interrupts_:
     dd _div_fault_
@@ -37,12 +39,20 @@ _sys_interrupts_:
 
 extern sys_exception_handler
 
+extern inter_keyboard
+
 _def_interrupt_handler_:
     ; Do nothing
     ; Just send EOI
     mov al, 0x20
     out 0x20, al
     iretd
+
+_keyboard_handler_:
+	call inter_keyboard
+	mov al, 0x20
+	out 0x20, al
+	iretd
 
 _div_fault_:
     push NO_ERROR

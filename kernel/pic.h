@@ -14,5 +14,6 @@
 
 void init_interrupt();
 void sys_exception_handler(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags);
+void inter_keyboard();
 
 #endif
