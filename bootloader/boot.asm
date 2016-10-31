@@ -9,11 +9,20 @@
 ; 以使编译后的地址与实际运行地址一致
 org 7C00h
 
-; 内核文件的加载地址
-KERNEL_ADDRESS equ 0x7E00
+; Kernel loaded address
+KERNEL_LOADED_ADDRESS equ 0x7E00
+
+; Kernel code address
+KERNEL_CODE_ADDRESS equ 0x800000
 
 ; 指定为16位汇编
 bits 16
+
+; Set boot stack
+mov ax, 0x7C0
+mov ss, ax
+mov ax, 0
+mov sp, ax
 
 ; 加载内核文件
 ; 读取引导区后内核文件到 0x7E00 位置
@@ -67,12 +76,13 @@ protected:
 
     mov ax, 0x18
     mov ss, ax
-    mov eax, 0
+    ;Set the stack under the kernel code
+    mov eax, KERNEL_CODE_ADDRESS
     mov esp, eax
 
 
-    ; 展开内核文件到 0x200000
-    mov esi, KERNEL_ADDRESS
+    ; 展开内核文件到运行地址
+    mov esi, KERNEL_LOADED_ADDRESS
     ; Save kernel entry
     mov eax, [esi + 24]
 
@@ -106,7 +116,7 @@ protected:
         ; Segment file address
         push esi
         mov ebx, [esi + 4]
-        mov esi, KERNEL_ADDRESS
+        mov esi, KERNEL_LOADED_ADDRESS
         add esi, ebx
 
         ; Copy segment to runtime address
@@ -169,12 +179,13 @@ GDT:
     db 0xCF   ; 11001111
     db 0
     ; Stack descriptor
-    ; 0x100000 - 0x1FFFFF
-    dw 0xFEFF
+    ; 0x510000 - 0xFFFFFFFF
+    ; dw 0xFAEF
+    dw 0x0510
     dw 0
-    db 0x20
+    db 0
     db 0x96   ; 10010110
-    db 0xCF   ; 11001111
+    db 0xC0   ; 11001111
     db 0
     ; VGA descriptor
     dw 0x7FFF

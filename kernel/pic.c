@@ -8,7 +8,7 @@
 #define PIC_MASTER 0x20
 #define PIC_SLAVE 0xA0
 
-#define IDT_SIZE 0xFF
+#define IDT_SIZE 256
 #define INT_GATE 0x8E00
 #define INT_TRAP 0xEF00
 
