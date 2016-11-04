@@ -4,8 +4,10 @@
  */
 
 #include "pic.h"
+#include "paging.h"
 
 void init() {
+    init_paging();
     init_interrupt();
 }
 
