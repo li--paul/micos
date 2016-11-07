@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "pic.h"
 #include "paging.h"
+#include "console.h"
 
 void init(uint32_t memory_size) {
     init_paging(memory_size);
@@ -14,5 +15,6 @@ void init(uint32_t memory_size) {
 
 int _main(uint32_t memory_size) {
     init(memory_size);
+    cs_printf("Welcome to MicOS\n");
     return 0;
 }
