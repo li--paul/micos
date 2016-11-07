@@ -13,3 +13,11 @@ int strlen(char *str) {
     }
     return len;
 }
+
+void memcpy(void *desc, const void *src, uint32_t n) {
+    char *p = (char *)desc;
+    char *s = (char *)src;
+    while (n--) {
+        *p++ = *s++;
+    }
+}

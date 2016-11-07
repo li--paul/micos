@@ -3,10 +3,16 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-#include <stdio.h>
+#include <stdint.h>
+#include "pic.h"
+#include "paging.h"
 
-int _main() {
-    char *str = "Welcome to MicOS, you are in Protected Mode!";
-    print(str);
+void init(uint32_t memory_size) {
+    init_paging(memory_size);
+    init_interrupt();
+}
+
+int _main(uint32_t memory_size) {
+    init(memory_size);
     return 0;
 }
