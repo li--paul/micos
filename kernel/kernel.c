@@ -3,15 +3,16 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
+#include <stdint.h>
 #include "pic.h"
 #include "paging.h"
 
-void init() {
-    init_paging();
+void init(uint32_t memory_size) {
+    init_paging(memory_size);
     init_interrupt();
 }
 
-int _main() {
-    init();
+int _main(uint32_t memory_size) {
+    init(memory_size);
     return 0;
 }

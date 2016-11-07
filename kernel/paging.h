@@ -9,6 +9,6 @@
 #include "kernel.h"
 #include <stdint.h>
 
-void init_paging();
+void init_paging(uint32_t memory_size);
 
 #endif

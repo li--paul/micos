@@ -24,6 +24,36 @@ mov ss, ax
 mov ax, 0
 mov sp, ax
 
+; Query memory info
+; Get the size of physical memory
+mov ax, 0
+mov es, ax
+mov di, M_INFO
+mov ebx, 0
+mov edx, 0x534D4150
+mov ecx, 20
+
+queryMemory:
+    mov eax, 0xE820
+    int 0x15
+	; Error
+    jc queryMemoryEnd
+    mov eax, [M_INFO + 16]
+    cmp eax, 1
+	; If it's reserved
+	; Query next one
+    jnz queryMemoryNext
+    ; Get base address
+    mov eax, [M_INFO]
+    ; Add length
+    add eax, [M_INFO + 8]
+    mov [M_SIZE], eax
+    queryMemoryNext:
+        cmp ebx, 0
+        jnz queryMemory
+
+queryMemoryEnd:
+
 ; 加载内核文件
 ; 读取引导区后内核文件到 0x7E00 位置
 mov ax, 0x7E0
@@ -145,17 +175,12 @@ protected:
         add esi, edx
         loop loadSegment
 
-    mov eax, 0
+    ; Pass memory size as a argument
+    mov eax, [M_SIZE]
+    push eax
     ; Go to kernel
     call [KERNEL_ENTRY]
-    ; Check the return
-    cmp eax, 0
-    jz end
-    push eax
-    call printReg
     end jmp $
-
-%include 'util/log32.asm'
 
 ; 全局描述符表
 ; TODO 区分内核段与用户段
@@ -203,6 +228,12 @@ GDTR:
 
 ; 内核入口地址
 KERNEL_ENTRY dd 0
+
+; Physical memory size
+M_SIZE dd 0
+
+; Memory address range descriptor
+M_INFO times 20 db 0
 
 ; 填充剩余的扇区空间
 ; 并标记当前扇区为引导区
