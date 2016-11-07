@@ -69,8 +69,27 @@ or
 * 保护模式的地址分段
 * ELF 文件格式（内核使用此格式封装）
 
+### 中断与分页
+
+**Tag** `int`
+
+启用中断与分页机制，突破物理内存的限制，具备访问完整 4G 线性地址空间的能力 ...
+
+涉及的问题：
+
+* 中断与异常
+* 分页
+
+另外增加了使用 `docker` 容器进行内核编译的方法，方便在 `macOS` 开发环境下进行本地编译
+
+```sh
+# Pull image
+$ docker pull treelite/micos-dev-env
+```
+
 ## 参考
 
 * [Intel汇编语言程序设计](https://book.douban.com/subject/2250326/) Intel 汇编入门书籍，最推荐，没有之一
 * [x86汇编语言 从实模式到保护模式](https://book.douban.com/subject/20492528/) 看标题就知道啦，内容正好涉及编写操作系统的基础
 * [Intel 汇编指令参考](http://www.skywind.me/maker/intel.htm) 指令参考文档
+* [操作系统简单实现与基本原理](https://www.gitbook.com/book/chyyuu/ucorebook)
