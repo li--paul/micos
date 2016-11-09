@@ -73,12 +73,13 @@ or
 
 **Tag** `int`
 
-启用中断与分页机制，突破物理内存的限制，具备访问完整 4G 线性地址空间的能力 ...
+启用中断与分页机制，突破了物理内存的限制，可以完整访问 4G 线性地址空间了，同时增加了简单的键盘中断处理演示 ...
 
 涉及的问题：
 
 * 中断与异常
-* 分页
+* 分页机制
+* 物理内存管理
 
 另外增加了使用 `docker` 容器进行内核编译的方法，方便在 `macOS` 开发环境下进行本地编译
 
@@ -89,7 +90,18 @@ $ docker pull treelite/micos-dev-env
 
 ## 参考
 
+__Books__
+
 * [Intel汇编语言程序设计](https://book.douban.com/subject/2250326/) Intel 汇编入门书籍，最推荐，没有之一
 * [x86汇编语言 从实模式到保护模式](https://book.douban.com/subject/20492528/) 看标题就知道啦，内容正好涉及编写操作系统的基础
-* [Intel 汇编指令参考](http://www.skywind.me/maker/intel.htm) 指令参考文档
-* [操作系统简单实现与基本原理](https://www.gitbook.com/book/chyyuu/ucorebook)
+
+__Manual__
+
+* [Intel 汇编指令参考](http://www.skywind.me/maker/intel.htm)
+
+__Links__
+
+* [OS Dev Wiki](http://wiki.osdev.org/Main_Page) Everything you need to create OS
+* [操作系统简单实现与基本原理](https://www.gitbook.com/book/chyyuu/ucorebook)，相关的代码在[这里](https://github.com/chyyuu/ucorebook_code)
+* [跟我一起写操作系统](http://www.askpure.com/course_KH3775IW-COUS3DX1-1Y2VUM3Q-CE78MA15.html)
+* [Airix](https://github.com/airtrack/airix) A toy OS
