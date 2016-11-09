@@ -9,37 +9,12 @@ NO_ERROR equ 0
 ; 默认中断处理函数
 global _def_interrupt_handler_
 
-global _sys_interrupts_
-
 global _keyboard_handler_
-
-; 系统默认异常与中断
-_sys_interrupts_:
-    dd _div_fault_
-    dd _debug_exception_
-    dd _nmi_
-    dd _break_point_
-    dd _overflow_
-    dd _over_bound_
-    dd _inval_opcode_
-    dd _copr_not_available_
-    dd _double_fault_
-    dd _over_segment_
-    dd _inval_tss_
-    dd _no_segment_
-    dd _ss_fault_
-    dd _general_protection_
-    dd _page_fault_
-    ; intel 保留位
-    dd _def_interrupt_handler_
-    dd _math_fault_
-    dd _align_check_
-    dd _machine_check_
-    dd _float_fault_
 
 extern sys_exception_handler
 
 extern inter_keyboard
+extern int_page_fault
 
 _def_interrupt_handler_:
     ; Do nothing
@@ -49,10 +24,10 @@ _def_interrupt_handler_:
     iretd
 
 _keyboard_handler_:
-	call inter_keyboard
-	mov al, 0x20
-	out 0x20, al
-	iretd
+    call inter_keyboard
+    mov al, 0x20
+    out 0x20, al
+    iretd
 
 _div_fault_:
     push NO_ERROR
@@ -121,7 +96,8 @@ _general_protection_:
 
 _page_fault_:
     push 14
-    jmp sys_exception
+    call int_page_fault
+    jmp end_sys_exception
 
 _math_fault_:
     push NO_ERROR
@@ -144,5 +120,32 @@ _float_fault_:
 
 sys_exception:
     call sys_exception_handler
-    add esp, 4 * 2
+end_sys_exception:
+    add esp, 8
     iretd
+
+section .data
+global _sys_interrupts_
+; 系统默认异常与中断
+_sys_interrupts_:
+    dd _div_fault_
+    dd _debug_exception_
+    dd _nmi_
+    dd _break_point_
+    dd _overflow_
+    dd _over_bound_
+    dd _inval_opcode_
+    dd _copr_not_available_
+    dd _double_fault_
+    dd _over_segment_
+    dd _inval_tss_
+    dd _no_segment_
+    dd _ss_fault_
+    dd _general_protection_
+    dd _page_fault_
+    ; intel 保留位
+    dd _def_interrupt_handler_
+    dd _math_fault_
+    dd _align_check_
+    dd _machine_check_
+    dd _float_fault_
