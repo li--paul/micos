@@ -10,5 +10,6 @@
 #include <stdint.h>
 
 void init_paging(uint32_t memory_size);
+void int_page_fault();
 
 #endif
