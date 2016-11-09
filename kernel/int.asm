@@ -19,11 +19,11 @@ extern int_page_fault
 
 _def_int_handler_:
     ; Do nothing
-	jmp _end_interrupt_
+    jmp _end_interrupt_
 
 _int_keyboard_:
     call int_keyboard
-	jmp _end_interrupt_
+    jmp _end_interrupt_
 
 _end_interrupt_:
     ; Send EOI to complete a interruption
