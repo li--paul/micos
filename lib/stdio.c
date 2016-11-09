@@ -11,7 +11,7 @@ static const int VGA_ADDRESS = 0xB8000;
 void print(char *str) {
     int len = strlen(str);
     char *p;
-    p = VGA_ADDRESS;
+    p = (char *)VGA_ADDRESS;
     for (int i = 0; i < len; i++) {
         *p = str[i];
         p++;

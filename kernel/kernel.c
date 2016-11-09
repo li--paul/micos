@@ -5,12 +5,16 @@
 
 #include <stdint.h>
 #include "pic.h"
-#include "paging.h"
+#include "idt.h"
+#include "mm/pmm.h"
+#include "mm/paging.h"
 #include "console.h"
 
 void init(uint32_t memory_size) {
-    init_paging(memory_size);
-    init_interrupt();
+    init_pmm(memory_size);
+    init_paging();
+    init_pic();
+    init_idt();
 }
 
 int _main(uint32_t memory_size) {

@@ -3,13 +3,14 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-#ifndef _PAGING_H_
-#define _PAGING_H_
+#ifndef _MM_PAGING_H_
+#define _MM_PAGING_H_
 
-#include "kernel.h"
 #include <stdint.h>
+#include "../kernel.h"
+#include "pmm.h"
 
-void init_paging(uint32_t memory_size);
+void init_paging();
 void int_page_fault();
 
 #endif

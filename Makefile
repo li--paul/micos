@@ -8,8 +8,10 @@ BOOT_SRC = $(BOOT_DIR)/boot.asm
 BOOT_INC = $(wildcard $(BOOT_DIR)/**/*.asm)
 
 KERNEL_DIR = kernel
-KERNEL_C_OBJ = $(patsubst %.c, %.o, $(wildcard $(KERNEL_DIR)/*.c))
-KERNEL_ASM_OBJ = $(patsubst %.asm, %.o, $(wildcard $(KERNEL_DIR)/*.asm))
+KERNEL_C = $(wildcard $(KERNEL_DIR)/*.c) $(wildcard $(KERNEL_DIR)/mm/*.c)
+KERNEL_C_OBJ = $(patsubst %.c, %.o, $(KERNEL_C))
+KERNEL_ASM = $(wildcard $(KERNEL_DIR)/*.asm)
+KERNEL_ASM_OBJ = $(patsubst %.asm, %.o, $(KERNEL_ASM))
 KERNEL_OBJ = $(KERNEL_C_OBJ) $(KERNEL_ASM_OBJ)
 KERNEL_SRC = $(KERNEL_DIR)/kernel.c
 KERNEL_OUTPUT = $(KERNEL_DIR)/kernel
@@ -52,10 +54,10 @@ $(BOOT_OUTPUT): $(BOOT_SRC) $(BOOT_INC)
 $(KERNEL_OUTPUT): $(KERNEL_OBJ) $(LIBC)
 	$(LD) $(KERNEL_OBJ) $(LD_OPTIONS) -T $(KERNEL_LINK_SCRIPT) -o $(KERNEL_OUTPUT)
 
-$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.asm
+$(KERNEL_ASM_OBJ): %.o : %.asm
 	$(NASM) -f elf -o $@ $<
 
-$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.c
+$(KERNEL_C_OBJ): %.o : %.c
 	$(GCC) $(GCC_OPTIONS) -o $@ $<
 
 $(LIBC): $(LIB_OBJ)
@@ -67,4 +69,6 @@ $(LIB_OBJ): %.o : %.c
 clean:
 	-rm $(OUTPUT)/*
 	-rm $(LIB_DIR)/*.o
+	-rm $(KERNEL_OUTPUT)
 	-rm $(KERNEL_DIR)/*.o
+	-rm $(KERNEL_DIR)/mm/*.o
