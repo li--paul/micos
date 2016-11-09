@@ -106,12 +106,12 @@ uint32_t itoa(uint32_t value, char *buffer, uint32_t base) {
     return len;
 }
 
-int print_arg(char c, va_list ap) {
+int print_arg(char c, va_list *ap) {
     int res = 1;
-    if (c == 'u') {
-        uint32_t v = va_arg(ap, uint32_t);
+    if (c == 'u' || c == 'h') {
+        uint32_t v = va_arg(*ap, uint32_t);
         char buffer[32];
-        uint32_t len = itoa(v, buffer, 10);
+        uint32_t len = itoa(v, buffer, c == 'u' ? 10 : 16);
         uint32_t i = 0;
         while (i < len) {
             putc(buffer[i++]);
@@ -129,7 +129,7 @@ void cs_printf(char *str, ...) {
     va_start(ap, str);
 
     while (*str) {
-        if (*str == '%' && print_arg(*(str + 1), ap)) {
+        if (*str == '%' && print_arg(*(str + 1), &ap)) {
             str++;
         }
         else {
