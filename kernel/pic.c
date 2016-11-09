@@ -31,7 +31,7 @@ struct IDTReg {
     uint32_t base;
 } __attribute__ ((packed));
 
-extern uint32_t *_sys_interrupts_;
+extern uint32_t _sys_interrupts_[];
 extern void _def_interrupt_handler_();
 extern void _keyboard_handler_();
 
@@ -74,7 +74,7 @@ void load_idt() {
 
     // 添加系统默认异常与中断处理
     for (int i = 0; i < 20; i++) {
-        create_idt_desc(CODE_SELECTOR, *_sys_interrupts_++, INT_GATE, &idt[i]);
+        create_idt_desc(CODE_SELECTOR, _sys_interrupts_[i], INT_GATE, &idt[i]);
     }
 
     // Keyboard  handler
@@ -90,7 +90,7 @@ void load_idt() {
 }
 
 void sys_exception_handler(uint32_t id, uint32_t error_code, uint32_t eip, uint32_t cs, uint32_t eflags) {
-    cs_printf("Error: %u \n", id);
+    cs_printf("Error: %u\n", id);
 }
 
 void inter_keyboard() {
