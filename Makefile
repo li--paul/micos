@@ -67,6 +67,7 @@ $(LIB_OBJ): %.o : %.c
 	$(GCC) $(GCC_OPTIONS) -o $@ $<
 
 clean:
+	-rm $(BOOT_OUTPUT)
 	-rm $(OUTPUT)/*
 	-rm $(LIB_DIR)/*.o
 	-rm $(KERNEL_OUTPUT)

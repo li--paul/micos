@@ -3,6 +3,5 @@ node_modules
 *.swp
 .DS_Store
 *.o
-output
 kernel/kernel
 bootloader/boot.img
